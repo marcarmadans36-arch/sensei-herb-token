@@ -1,0 +1,43 @@
+{
+  "name": "sensei-herb-token",
+  "version": "0.1.0",
+  "description": "Sensei Herb Token (SENSEI): ERC-20 de suministro fijo en Base",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:local": "hardhat run scripts/deploy.js --network hardhat",
+    "demo:local": "hardhat run scripts/demo-local.js --network hardhat",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network baseSepolia",
+    "deploy:base": "hardhat run scripts/deploy.js --network base",
+    "verify:sepolia": "hardhat run scripts/verify.js --network baseSepolia",
+    "verify:base": "hardhat run scripts/verify.js --network base",
+    "liquidity:base": "hardhat run scripts/add-liquidity.js --network base",
+    "scenarios": "node scripts/liquidity-scenarios.js",
+    "web": "cd web && python3 -m http.server 8080",
+    "check:secrets": "node scripts/check-secrets.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcarmadans36-arch/sensei-herb-token.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/marcarmadans36-arch/sensei-herb-token/issues"
+  },
+  "homepage": "https://github.com/marcarmadans36-arch/sensei-herb-token#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "6.1.2",
+    "@uniswap/v2-core": "1.0.1",
+    "@uniswap/v2-periphery": "1.1.0-beta.0",
+    "dotenv": "16.4.7",
+    "hardhat": "2.29.1",
+    "solc": "0.8.28"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "5.6.1"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  }
+}

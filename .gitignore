@@ -1,0 +1,17 @@
+node_modules/
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+keystore/
+cache/
+artifacts/
+typechain-types/
+coverage/
+coverage.json
+gas-report.txt
+# Despliegues en redes locales (efímeros). base.json y baseSepolia.json SÍ se versionan.
+deployments/hardhat.json
+deployments/localhost.json
+.DS_Store

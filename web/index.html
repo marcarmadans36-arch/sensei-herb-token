@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sensei Herb Token (SENSEI)</title>
+  <meta name="description" content="Token ERC-20 en Base para financiar el desarrollo de Sensei Herb. Suministro fijo, distribución pública y riesgos explicados." />
+  <link rel="icon" href="assets/sensei-logo.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="banner" class="banner" hidden></div>
+
+  <header class="hero">
+    <div class="wrap hero-inner">
+      <img src="assets/sensei-logo.png" alt="Logo de Sensei Herb" class="logo" width="111" height="205" />
+      <div>
+        <p class="eyebrow">Token ERC-20 en Base</p>
+        <h1>Sensei Herb <span class="sym">SENSEI</span></h1>
+        <p class="lead">Un token de suministro fijo creado para financiar el desarrollo de la app Sensei Herb.
+          Sin emisión adicional, sin impuestos ocultos, sin administrador.</p>
+        <nav class="pills">
+          <a href="#tokenomics">Tokenomics</a><a href="#estado">Estado</a><a href="#contratos">Contratos</a>
+          <a href="#liquidez">Liquidez</a><a href="#riesgos">Riesgos</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="proposito">
+      <h2>Para qué sirve</h2>
+      <div class="grid3">
+        <article class="card"><h3>Financiar el desarrollo</h3><p>La tesorería (25 %) se destina a desarrollo, infraestructura y auditorías de Sensei Herb, con desbloqueo lineal durante 24 meses.</p></article>
+        <article class="card"><h3>Comunidad</h3><p>El 30 % se reserva para recompensas, campañas y colaboradores. No está en circulación hasta que se reparte, y cada envío es público en el explorador.</p></article>
+        <article class="card"><h3>Transparencia</h3><p>Todas las asignaciones quedan registradas en el propio contrato (<code>allocation(i)</code>) y en eventos <code>InitialAllocation</code>.</p></article>
+      </div>
+      <p class="muted">SENSEI no da derecho a acciones, beneficios, dividendos ni voto sobre la empresa. No es un producto de inversión.</p>
+    </section>
+
+    <section id="tokenomics">
+      <h2>Tokenomics</h2>
+      <div class="stats">
+        <div class="stat"><span class="k">Suministro total (fijo)</span><span class="v" id="st-supply">—</span></div>
+        <div class="stat"><span class="k">Circulante estimado</span><span class="v" id="st-circ">—</span><span class="s" id="st-circ-note"></span></div>
+        <div class="stat"><span class="k">Precio en el pool</span><span class="v" id="st-price">—</span><span class="s" id="st-price-note"></span></div>
+        <div class="stat"><span class="k">FDV teórica</span><span class="v" id="st-fdv">—</span><span class="s">precio × suministro total</span></div>
+      </div>
+      <div class="bar" id="alloc-bar" aria-hidden="true"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Categoría</th><th>%</th><th>Tokens</th><th>Bloqueo</th><th>Saldo actual</th></tr></thead>
+          <tbody id="alloc-body"></tbody>
+        </table>
+      </div>
+      <details class="card">
+        <summary>Definiciones: total, circulante, capitalización y FDV</summary>
+        <ul>
+          <li><b>Suministro total:</b> 100.000.000 SENSEI, acuñados una sola vez. El contrato no tiene función de emisión.</li>
+          <li><b>Circulante:</b> tokens que cualquiera puede comprar o vender hoy. Excluye vesting, comunidad y tesorería no distribuidas. Al inicio, solo los tokens depositados en el pool.</li>
+          <li><b>Capitalización:</b> precio × circulante.</li>
+          <li><b>FDV:</b> precio × suministro total. Es una cifra teórica: nadie podría vender todo el suministro a ese precio.</li>
+          <li>El valor de los tokens del fundador al precio mostrado <b>no es dinero realizable</b>: venderlos hundiría el precio (ver calculadora).</li>
+        </ul>
+      </details>
+    </section>
+
+    <section id="estado">
+      <h2>Estado del despliegue</h2>
+      <div class="grid2">
+        <article class="card"><h3>Contratos</h3><p id="status-deploy">Cargando…</p></article>
+        <article class="card"><h3>Liquidez</h3><p id="status-liq">Cargando…</p></article>
+      </div>
+    </section>
+
+    <section id="contratos">
+      <h2>Direcciones verificables</h2>
+      <ul class="addr-list" id="addr-list"></ul>
+    </section>
+
+    <section id="equipo">
+      <h2>Fundador y tesorería</h2>
+      <div class="grid2">
+        <article class="card"><h3>Asignación del fundador (30 %)</h3>
+          <p>Bloqueada en un contrato de vesting de OpenZeppelin: <b>nada durante 12 meses</b>, después desbloqueo lineal hasta el mes 48. Nadie puede adelantar el calendario. Cuando se libere, el fundador podrá venderla; hacerlo afectaría al precio.</p></article>
+        <article class="card"><h3>Tesorería y desarrollo (25 %)</h3>
+          <p>Desbloqueo lineal durante 24 meses hacia una cartera multifirma (Safe). Los movimientos de la tesorería son públicos y se documentarán.</p></article>
+      </div>
+    </section>
+
+    <section id="liquidez">
+      <h2>Calculadora de liquidez</h2>
+      <p class="muted">Simula un pool Uniswap V2 (x·y = k, comisión 0,30 %). El <b>precio mostrado</b> es el del último intercambio; el <b>precio medio</b> es lo que realmente obtendrías al ejecutar la operación.</p>
+      <form class="calc card" id="calc" onsubmit="return false">
+        <label>Tokens en el pool <input type="number" id="c-tok" min="1" step="1" value="15000000" /></label>
+        <label>USD en el pool (lado ETH) <input type="number" id="c-usd" min="0.01" step="0.01" value="80" /></label>
+        <label>Tokens a vender <input type="number" id="c-sell" min="0" step="1" value="1000000" /></label>
+        <label>USD a comprar <input type="number" id="c-buy" min="0" step="0.01" value="10" /></label>
+      </form>
+      <div class="grid2">
+        <article class="card"><h3>Venta</h3><dl id="c-sell-out"></dl></article>
+        <article class="card"><h3>Compra</h3><dl id="c-buy-out"></dl></article>
+      </div>
+    </section>
+
+    <section id="riesgos" class="risk">
+      <h2>Riesgos</h2>
+      <ul>
+        <li><b>Puedes perder todo el dinero</b> que uses para comprar SENSEI.</li>
+        <li><b>No hay garantía de revalorización.</b> El precio puede bajar a cero y ningún equipo puede impedirlo.</li>
+        <li><b>No hay garantía de liquidez.</b> Con un pool pequeño, vender cantidades modestas mueve mucho el precio y puede no haber compradores.</li>
+        <li>Volatilidad extrema, errores de contrato, robo de carteras y cambios regulatorios.</li>
+        <li>El código no ha sido auditado por terceros. Usa solo lo que estés dispuesto a perder.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <p>Esta página es informativa. No constituye asesoramiento financiero ni una oferta de valores. Comprueba siempre las direcciones en el explorador de bloques.</p>
+    <p class="muted" id="data-source"></p>
+  </footer>
+
+  <script src="amm.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
