@@ -77,7 +77,7 @@ Referencia: los 30.000.000 SENSEI del fundador "valen" 160,00 USD al precio most
 
 1. Con 50–150 USD de liquidez el mercado es **muy poco profundo**. Una compra de 10 USD ya mueve el precio entre un 14 % y un 44 %, y una venta de 1 M de tokens (1 % del suministro) lo hunde más de un 12 %.
 2. **No conviene depositar más ETH del que se esté dispuesto a perder**. El ETH del pool lo pueden retirar los compradores al vender: es su salida, no un ingreso del proyecto.
-3. **El valor del fundador o de la FDV no es dinero realizable.** El pool solo contiene lo que se aportó más lo que hayan comprado otros.
+3. **El valor del fundador o de la FDV no es dinero realizable.** El fundador tiene sus 30 M libres desde el primer bloque; ver `docs/FOUNDER_SELL_SIMULATION.md`. El pool solo contiene lo que se aportó más lo que hayan comprado otros.
 4. Decidir qué hacer con los tokens LP antes de crear el pool:
    - Conservarlos en un Safe multisig: se puede retirar la liquidez. Debe declararse públicamente.
    - Bloquearlos en un servicio de bloqueo con fecha (a elección del usuario, investigar antes).

@@ -4,13 +4,15 @@ Marca cada casilla tú mismo. Nada de esta lista se ha ejecutado en una red púb
 
 ## 0. Decisiones (antes de gastar nada)
 - [ ] Confirmar nombre, símbolo y suministro definitivos. Buscar en Basescan que no haya otro token "SENSEI" que pueda causar confusión.
-- [ ] Confirmar porcentajes y calendarios de vesting (`TOKENOMICS.md`).
+- [ ] Confirmar porcentajes y el calendario de vesting de tesorería (`TOKENOMICS.md`).
+- [ ] Confirmar que aceptas que la asignación del fundador (30 %) esté libre desde el primer bloque, y comunicarlo públicamente. Revisar `docs/FOUNDER_SELL_SIMULATION.md`.
+- [ ] Si `.env` tiene `FOUNDER_CLIFF_MONTHS` o `FOUNDER_VESTING_MONTHS` de una versión anterior, borrarlas (el script se detiene si existen).
 - [ ] Decidir cuánto ETH se aporta al pool y cuántos tokens (ver `docs/LIQUIDITY.md`).
 - [ ] Decidir la custodia de los tokens LP (Safe, bloqueo temporal o quema irreversible) y publicarlo.
 - [ ] Consultar con un asesor legal la normativa aplicable (en la UE, MiCA puede exigir un white paper y notificaciones para ofertas públicas de criptoactivos).
 
 ## 1. Carteras (coste ≈ 0–1 USD en Base)
-- [ ] Cartera del fundador (hardware recomendada) → `FOUNDER_ADDRESS`.
+- [ ] Cartera del fundador (hardware recomendada) → `FOUNDER_ADDRESS`. Recibirá 30 M libres: protégela como si contuviera fondos líquidos.
 - [ ] Safe multisig de comunidad en Base → `COMMUNITY_ADDRESS`.
 - [ ] Safe multisig de tesorería en Base → `TREASURY_ADDRESS`.
 - [ ] Cartera desechable de despliegue + liquidez → `DEPLOYER_PRIVATE_KEY` en `.env` y su dirección en `LIQUIDITY_ADDRESS`.
@@ -20,7 +22,8 @@ Marca cada casilla tú mismo. Nada de esta lista se ha ejecutado en una red púb
 - [ ] Obtener ETH de Base Sepolia en un faucet (p. ej. el de Coinbase Developer Platform o Alchemy).
 - [ ] `npm test`
 - [ ] `DRY_RUN=true npm run deploy:sepolia`
-- [ ] `npm run deploy:sepolia` → escribir `DESPLEGAR 84532`
+- [ ] `npm run deploy:sepolia` → escribir `DESPLEGAR 84532`. El plan debe mostrar "Fundador … directo" y "es una cartera normal (EOA)".
+- [ ] Comprobar en el explorador que `FOUNDER_ADDRESS` tiene 30.000.000 SENSEI desde el bloque de creación, y hacer una transferencia de prueba desde ella.
 - [ ] Clave de Etherscan en `.env` → `npm run verify:sepolia`
 - [ ] Abrir los contratos en sepolia.basescan.org y comprobar código verificado, saldos y eventos `InitialAllocation`.
 - [ ] Abrir la web (`npm run web`) y comprobar que muestra "Base Sepolia" con datos en vivo.

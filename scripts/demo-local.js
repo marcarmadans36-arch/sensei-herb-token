@@ -1,5 +1,5 @@
 // Demo completa en la red local de Hardhat (sin coste, sin fondos reales):
-// despliega vesting + token, despliega Uniswap V2 local, crea el pool y escribe web/data/demo.json.
+// despliega el vesting de tesorería + token, despliega Uniswap V2 local, crea el pool y escribe web/data/demo.json.
 // Uso: npx hardhat run scripts/demo-local.js
 const fs = require("fs");
 const path = require("path");

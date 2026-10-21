@@ -10,6 +10,7 @@ Token ERC-20 de suministro fijo en **Base** para financiar el desarrollo de Sens
 | [SECURITY.md](SECURITY.md) | Modelo de permisos, gestión de claves y validación |
 | [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md) | Pasos pendientes para testnet, mainnet y pool |
 | [docs/LIQUIDITY.md](docs/LIQUIDITY.md) | DEX, escenarios de precio, slippage y ventas |
+| [docs/FOUNDER_SELL_SIMULATION.md](docs/FOUNDER_SELL_SIMULATION.md) | Cuánto recibiría el fundador al vender sus tokens libres |
 
 ## Elección de la blockchain: Base
 
@@ -25,7 +26,7 @@ Token ERC-20 de suministro fijo en **Base** para financiar el desarrollo de Sens
 **Decisión: Base.**
 1. ERC-20 + OpenZeppelin es el estándar más usado y auditado para tokens fungibles.
 2. El suministro fijo se garantiza por código (no hay función de mint), en lugar de depender de revocar la autoridad de mint como en SPL.
-3. El vesting del fundador y la tesorería se hace con contratos estándar de OpenZeppelin, sin servicios externos.
+3. El vesting de la tesorería se hace con un contrato estándar de OpenZeppelin, sin servicios externos. La asignación del fundador no tiene vesting.
 4. El código fuente se verifica en Basescan: cualquiera puede leer exactamente qué se desplegó.
 5. Desplegar cuesta céntimos y crear el pool en Uniswap V2 no tiene tasa de creación, así que casi todo el presupuesto va a la liquidez.
 6. Compatible con cualquier cartera EVM y con Safe multisig para la tesorería.
@@ -52,10 +53,12 @@ El compilador `solc` 0.8.28 se instala desde npm (no se descarga en tiempo de co
 
 | Comando | Qué hace | ¿Coste real? |
 |---|---|---|
-| `npm test` | 29 pruebas automatizadas | No |
+| `npm test` | 31 pruebas automatizadas | No |
 | `npm run deploy:local` | Despliegue simulado en red efímera, con plan y estimación de gas | No |
 | `npm run demo:local` | Despliegue + Uniswap V2 local + pool; escribe `web/data/demo.json` | No |
 | `npm run scenarios` | Tabla de escenarios de liquidez | No |
+| `npm run founder-sell` | Simula la venta de los tokens del fundador (reservas hipotéticas) | No |
+| `ETH_USD=… npm run founder-sell:base` | La misma simulación con las reservas reales del pool (solo lectura) | No |
 | `npm run web` | Sirve la web en http://localhost:8080 | No |
 | `npm run check:secrets` | Busca claves en archivos versionados | No |
 | `npm run deploy:sepolia` / `verify:sepolia` | Red de pruebas Base Sepolia | No (ETH de faucet) |
@@ -73,7 +76,7 @@ Con `DRY_RUN=true` delante, los scripts de despliegue y de liquidez muestran el 
 4. `npm run verify:sepolia`.
 5. Repite con `base` cuando la red de pruebas esté validada.
 
-El script despliega primero los contratos de vesting y después el token, que acuña todo el suministro repartido en una sola transacción. Luego comprueba en cadena el suministro y cada saldo, y guarda `deployments/<red>.json` y `web/data/<red>.json`.
+El script despliega primero el contrato de vesting de tesorería y después el token, que acuña todo el suministro repartido en una sola transacción. El fundador recibe sus 30 M directamente en esa transacción, libres desde ese bloque. Luego comprueba en cadena el suministro y cada saldo, y guarda `deployments/<red>.json` y `web/data/<red>.json`.
 
 ## Web
 
@@ -85,7 +88,7 @@ Precio del ETH no consultado (la red de este entorno no permite acceder a RPC ni
 
 | Concepto | Estimado | Verificado |
 |---|---|---|
-| Gas de despliegue (2 vesting + token ≈ 2.303.566 gas, medido en local) | 0,05 – 1 USD + comisión de datos L1 (céntimos) | 0 USD (no ejecutado) |
+| Gas de despliegue (1 vesting + token ≈ 1.682.671 gas, medido en local) | 0,05 – 1 USD + comisión de datos L1 (céntimos) | 0 USD (no ejecutado) |
 | Verificación en Basescan / Sourcify | 0 USD | 0 USD (no ejecutado) |
 | Crear 2 Safe multisig en Base | 0,05 – 1 USD | 0 USD (no ejecutado) |
 | Comisión de retirada de ETH a Base desde un exchange | 0 – 5 USD (según exchange) | — |
@@ -115,3 +118,4 @@ docs/               LIQUIDITY.md
 - **Fase C, validación:** compilación correcta, 29/29 pruebas, distribución comprobada en cadena (local), sin secretos versionados, revisión de permisos.
 - **Fase D, despliegue de prueba:** despliegue completo y pool Uniswap V2 en la red local de Hardhat. **Base Sepolia no**: este entorno no puede conectarse a su RPC y no hay cartera con fondos de faucet.
 - **Fase E:** comandos de mainnet preparados con confirmación obligatoria. No se ha ejecutado ninguna transacción real.
+- **Cambio de tokenomics (21-10-2026):** se elimina el vesting del fundador. Sus 30 M van directamente a `FOUNDER_ADDRESS` y están disponibles desde el bloque de despliegue. Se elimina el contrato de vesting del fundador (queda solo el de tesorería). Se añade la simulación de venta del fundador. 31/31 pruebas. Sin despliegues ni transacciones reales.

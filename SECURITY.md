@@ -5,7 +5,9 @@
 | Contrato | Origen | Privilegios |
 |---|---|---|
 | `SenseiHerbToken` | `ERC20` de OpenZeppelin 5.6.1 + constructor de reparto | **Ninguno.** Sin owner, mint, pausa, blacklist, tasas ni proxy |
-| `SenseiVesting` | `VestingWalletCliff` de OpenZeppelin 5.6.1, sin lógica propia | `owner` = beneficiario. Puede `release()` lo devengado y `transferOwnership()`. No puede adelantar el calendario |
+| `SenseiVesting` (solo tesorería) | `VestingWalletCliff` de OpenZeppelin 5.6.1, sin lógica propia | `owner` = beneficiario. Puede `release()` lo devengado y `transferOwnership()`. No puede adelantar el calendario |
+
+El fundador **no** tiene contrato de vesting: sus 30 M van directamente a `FOUNDER_ADDRESS` en el despliegue. `deploy.js` avisa si esa dirección es un contrato, para descartar un bloqueo indirecto.
 
 - Solidity 0.8.28 fijado (`pragma solidity 0.8.28`), optimizador 200 runs, EVM `cancun`.
 - Compilador `solc` 0.8.28 fijado en `package.json` y `package-lock.json` (solcjs), con comprobación de versión en `hardhat.config.js`.
@@ -13,6 +15,8 @@
 - **No hay auditoría externa.** No se debe afirmar lo contrario.
 
 ### Riesgos conocidos y decisiones
+
+0. **Asignación del fundador libre (30 %)**: puede venderse en cualquier momento desde el primer bloque. Es un riesgo de mercado para los compradores, no un fallo del contrato. Si la clave del fundador se filtra, el atacante podría vender 30 M de inmediato: usa una cartera hardware o un Safe y no la uses para nada más.
 
 1. **`release()` es público** en VestingWallet: cualquiera puede llamarlo, pero los tokens siempre van al beneficiario. Es el comportamiento estándar.
 2. **Transferir la titularidad del vesting** (`transferOwnership`) cambia quién cobra. Si se pierde la clave del beneficiario, los tokens devengados quedan inaccesibles. Usa un Safe multisig o una cartera hardware como beneficiario.
@@ -43,7 +47,7 @@ Los scripts `deploy.js` y `add-liquidity.js`:
 
 ## Validación realizada (21-10-2026)
 
-- `npm test`: 29 pruebas superadas (suministro, asignaciones, eventos, permisos/ABI, transferencias, aprobaciones, vesting, configuración, pool Uniswap V2 local).
+- `npm test`: 31 pruebas superadas (suministro, asignaciones, eventos, permisos/ABI, transferencias, aprobaciones, disponibilidad inmediata del fundador, vesting de tesorería, configuración, pool Uniswap V2 local y venta del fundador en el pool).
 - Revisión manual: sin `selfdestruct`, `delegatecall`, ensamblador, llamadas externas ni bucles sin límite en código propio (el bucle del constructor se ejecuta una sola vez con 4 elementos).
 - `npm run check:secrets`: sin claves ni frases semilla en archivos versionados.
 

@@ -19,7 +19,7 @@ async function poolFixture() {
   const tokenAmount = 15_000_000n * E18;
   const ethAmount = ethers.parseEther("0.03");
   await addLiquidity({ token, routerAddr: await router.getAddress(), signer: liquidity, tokenAmount, ethAmount, slippageBps: 100n, to: liquidity.address });
-  return { token, weth, factory, router, liquidity, trader, tokenAmount, ethAmount };
+  return { token, weth, factory, router, founder, liquidity, trader, tokenAmount, ethAmount };
 }
 
 describe("Pool de liquidez Uniswap V2 (red local)", function () {
@@ -67,5 +67,21 @@ describe("Pool de liquidez Uniswap V2 (red local)", function () {
     const sim = AMM.simulateSell(1_000_000, Number(tokenAmount / E18), Number(ethers.formatEther(ethAmount)));
     expect(sim.priceImpact).to.be.greaterThan(0.1);
     expect(sim.received).to.be.lessThan(sim.valueAtSpot);
+  });
+
+  it("el fundador puede vender en el pool en el bloque siguiente y recibe exactamente lo simulado", async function () {
+    const { token, weth, factory, router, founder } = await loadFixture(poolFixture);
+    const r = new ethers.Contract(await router.getAddress(),
+      ["function swapExactTokensForETH(uint,uint,address[],address,uint) returns (uint[])"], founder);
+    const before = await readPool(ethers.provider, await factory.getAddress(), await token.getAddress(), await weth.getAddress());
+    const sellIn = 1_000_000n * E18;
+    const expected = AMM.getAmountOutBig(sellIn, before.tokenReserve, before.ethReserve);
+    await token.connect(founder).approve(await router.getAddress(), sellIn);
+    const balBefore = await ethers.provider.getBalance(founder.address);
+    const deadline = BigInt((await ethers.provider.getBlock("latest")).timestamp + 600);
+    const rc = await (await r.swapExactTokensForETH(sellIn, expected, [await token.getAddress(), await weth.getAddress()], founder.address, deadline)).wait();
+    expect((await ethers.provider.getBalance(founder.address)) - balBefore + rc.gasUsed * rc.gasPrice).to.equal(expected);
+    // Lo recibido es menor que el "valor" a precio mostrado por impacto y comisión.
+    expect(expected < (sellIn * before.ethReserve) / before.tokenReserve).to.equal(true);
   });
 });

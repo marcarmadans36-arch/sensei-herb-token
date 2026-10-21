@@ -21,6 +21,10 @@ function int(name, fallback) {
  * @param {Record<string,string>} defaults direcciones por defecto (solo para redes locales)
  */
 function loadTokenomics(defaults = {}) {
+  for (const removed of ["FOUNDER_CLIFF_MONTHS", "FOUNDER_VESTING_MONTHS"]) {
+    if (env(removed, "") !== "")
+      throw new Error(`${removed} ya no existe: la asignación del fundador no tiene vesting. Elimínala de .env.`);
+  }
   const name = env("TOKEN_NAME", "Sensei Herb");
   const symbol = env("TOKEN_SYMBOL", "SENSEI");
   const maxSupplyTokens = int("MAX_SUPPLY", 100_000_000);
@@ -28,8 +32,9 @@ function loadTokenomics(defaults = {}) {
   const maxSupply = maxSupplyTokens * 10n ** DECIMALS;
 
   const categories = [
+    // El fundador recibe su asignación directamente y disponible desde el bloque de despliegue (sin vesting).
     { key: "founder", label: "Fundador", bps: int("FOUNDER_BPS", 3000), address: env("FOUNDER_ADDRESS", defaults.founder),
-      cliffMonths: int("FOUNDER_CLIFF_MONTHS", 12), vestingMonths: int("FOUNDER_VESTING_MONTHS", 48) },
+      cliffMonths: 0n, vestingMonths: 0n },
     { key: "community", label: "Comunidad", bps: int("COMMUNITY_BPS", 3000), address: env("COMMUNITY_ADDRESS", defaults.community),
       cliffMonths: 0n, vestingMonths: 0n },
     { key: "treasury", label: "Tesorería y desarrollo", bps: int("TREASURY_BPS", 2500), address: env("TREASURY_ADDRESS", defaults.treasury),

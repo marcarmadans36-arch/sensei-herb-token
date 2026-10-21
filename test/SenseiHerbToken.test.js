@@ -49,8 +49,8 @@ describe("SenseiHerbToken", function () {
 
   describe("Asignaciones iniciales", function () {
     it("reparte 30/30/25/15 millones a los destinatarios configurados", async function () {
-      const { token, vestings, community, liquidity } = await loadFixture(deployFixture);
-      expect(await token.balanceOf(await vestings.founder.getAddress())).to.equal(30_000_000n * E18);
+      const { token, vestings, founder, community, liquidity } = await loadFixture(deployFixture);
+      expect(await token.balanceOf(founder.address)).to.equal(30_000_000n * E18);
       expect(await token.balanceOf(community.address)).to.equal(30_000_000n * E18);
       expect(await token.balanceOf(await vestings.treasury.getAddress())).to.equal(25_000_000n * E18);
       expect(await token.balanceOf(liquidity.address)).to.equal(15_000_000n * E18);
@@ -134,40 +134,50 @@ describe("SenseiHerbToken", function () {
     });
   });
 
-  describe("Vesting del fundador (cliff 12 meses, 48 meses lineal)", function () {
-    it("no libera nada antes del cliff", async function () {
-      const { token, vestings, founder, start } = await loadFixture(deployFixture);
-      const v = vestings.founder;
-      await time.increaseTo(start + 12n * BigInt(MONTH) - 10n);
-      expect(await v["releasable(address)"](await token.getAddress())).to.equal(0n);
-      await v["release(address)"](await token.getAddress());
-      expect(await token.balanceOf(founder.address)).to.equal(0n);
+  describe("Fundador: tokens disponibles desde el bloque de despliegue", function () {
+    it("la cartera del fundador recibe los 30.000.000 SENSEI en el mismo bloque del despliegue", async function () {
+      const { token, founder, recipients } = await loadFixture(deployFixture);
+      const rc = await token.deploymentTransaction().wait();
+      expect(recipients[0]).to.equal(founder.address);
+      expect(await token.balanceOf(founder.address, { blockTag: rc.blockNumber })).to.equal(30_000_000n * E18);
+      // El saldo procede de la propia transacción de despliegue (Transfer desde 0x0), no de una liberación posterior.
+      const mint = rc.logs.map((l) => token.interface.parseLog(l)).find((e) => e?.name === "Transfer" && e.args.to === founder.address);
+      expect(mint.args.from).to.equal(ethers.ZeroAddress);
+      expect(mint.args.value).to.equal(30_000_000n * E18);
     });
 
-    it("al pasar el cliff libera la parte lineal acumulada (25 %) y solo al beneficiario", async function () {
-      const { token, vestings, founder, alice, start } = await loadFixture(deployFixture);
-      const v = vestings.founder;
-      await time.increaseTo(start + 12n * BigInt(MONTH));
-      // release() es público, pero los tokens siempre van al beneficiario (owner).
-      await v.connect(alice)["release(address)"](await token.getAddress());
-      const bal = await token.balanceOf(founder.address);
-      expect(bal).to.be.closeTo(7_500_000n * E18, 10n * E18);
-      expect(await token.balanceOf(alice.address)).to.equal(0n);
+    it("no se despliega ningún contrato de vesting para el fundador y su destinatario no es un contrato", async function () {
+      const { vestings, founder, token } = await loadFixture(deployFixture);
+      expect(Object.keys(vestings)).to.deep.equal(["treasury"]);
+      expect(await ethers.provider.getCode(founder.address)).to.equal("0x");
+      const a0 = await token.allocation(0);
+      expect(a0.recipient).to.equal(founder.address);
     });
 
-    it("libera el 100 % al final del periodo", async function () {
-      const { token, vestings, founder, start } = await loadFixture(deployFixture);
-      await time.increaseTo(start + 48n * BigInt(MONTH));
-      await vestings.founder["release(address)"](await token.getAddress());
-      expect(await token.balanceOf(founder.address)).to.equal(30_000_000n * E18);
-      expect(await token.balanceOf(await vestings.founder.getAddress())).to.equal(0n);
+    it("el fundador puede transferir el 100 % inmediatamente, sin esperar tiempo", async function () {
+      const { token, founder, alice } = await loadFixture(deployFixture);
+      // Sin time.increase: siguiente bloque tras el despliegue.
+      await expect(token.connect(founder).transfer(alice.address, 30_000_000n * E18))
+        .to.changeTokenBalances(token, [founder, alice], [-30_000_000n * E18, 30_000_000n * E18]);
+      expect(await token.totalSupply()).to.equal(100_000_000n * E18);
     });
 
-    it("el beneficiario es el owner y nadie más puede cambiarlo", async function () {
-      const { vestings, founder, alice } = await loadFixture(deployFixture);
-      expect(await vestings.founder.owner()).to.equal(founder.address);
-      await expect(vestings.founder.connect(alice).transferOwnership(alice.address))
-        .to.be.revertedWithCustomError(vestings.founder, "OwnableUnauthorizedAccount");
+    it("el fundador puede aprobar a terceros (p. ej. un router de DEX) desde el primer bloque", async function () {
+      const { token, founder, alice, bob } = await loadFixture(deployFixture);
+      await token.connect(founder).approve(alice.address, 1_000_000n * E18);
+      await token.connect(alice).transferFrom(founder.address, bob.address, 1_000_000n * E18);
+      expect(await token.balanceOf(bob.address)).to.equal(1_000_000n * E18);
+    });
+
+    it("rechaza las variables antiguas de vesting del fundador para evitar configuraciones ambiguas", function () {
+      const saved = process.env.FOUNDER_CLIFF_MONTHS;
+      process.env.FOUNDER_CLIFF_MONTHS = "12";
+      try {
+        expect(() => loadTokenomics({ founder: "0x" + "1".repeat(40), community: "0x" + "2".repeat(40), treasury: "0x" + "3".repeat(40), liquidity: "0x" + "4".repeat(40) }))
+          .to.throw(/FOUNDER_CLIFF_MONTHS ya no existe/);
+      } finally {
+        if (saved === undefined) delete process.env.FOUNDER_CLIFF_MONTHS; else process.env.FOUNDER_CLIFF_MONTHS = saved;
+      }
     });
   });
 

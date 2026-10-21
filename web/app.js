@@ -43,7 +43,7 @@
   }
 
   function lockText(a) {
-    if (!a.vesting) return a.key === "liquidity" ? "Libre (destinada al pool)" : "Sin vesting (cartera multifirma)";
+    if (!a.vesting) return { founder: "Ninguno: libre desde el despliegue", liquidity: "Libre (destinada al pool)" }[a.key] || "Sin vesting (cartera multifirma)";
     return a.vesting.cliffMonths > 0 ? `Cliff ${a.vesting.cliffMonths} m + lineal hasta ${a.vesting.durationMonths} m` : `Lineal ${a.vesting.durationMonths} meses`;
   }
 
@@ -80,10 +80,10 @@
 
     $("st-supply").innerHTML = fmtTok(supply) + " " + tag;
     if (haveBalances) {
-      const locked = rec.allocations.reduce((s, a) => s + (balances[a.holder] ?? 0n), 0n);
-      const circ = supply - locked;
-      $("st-circ").textContent = fmtTok(circ);
-      $("st-circ-note").textContent = "suministro − saldos de las carteras de asignación";
+      // El saldo del fundador es libre y cuenta como circulante; el resto de carteras de asignación no.
+      const notCirc = rec.allocations.filter((a) => a.key !== "founder").reduce((s, a) => s + (balances[a.holder] ?? 0n), 0n);
+      $("st-circ").textContent = fmtTok(supply - notCirc);
+      $("st-circ-note").textContent = "incluye los tokens libres del fundador";
     } else { $("st-circ").textContent = "n/d"; }
     if (pool && pool.tokenReserve > 0n) {
       const price = Number(pool.ethReserve) / Number(pool.tokenReserve);
@@ -120,6 +120,7 @@
   function calc() {
     const tok = +$("c-tok").value, usd = +$("c-usd").value, sell = +$("c-sell").value, buy = +$("c-buy").value;
     if (!(tok > 0 && usd > 0)) return;
+    founderTable(tok, usd);
     const s = SenseiAMM.simulateSell(sell || 0, tok, usd);
     const b = SenseiAMM.simulateBuy(buy || 0, tok, usd);
     $("c-sell-out").innerHTML = sell > 0 ? `
@@ -134,6 +135,14 @@
       <dt>Precio medio</dt><dd>${fmtSci(b.avgPrice)} USD</dd>
       <dt>Slippage</dt><dd>${fmtNum(b.slippage * 100)} %</dd>
       <dt>Subida del precio</dt><dd>+${fmtNum(b.priceImpact * 100)} %</dd>` : "<dt>Introduce una cantidad</dt><dd></dd>";
+  }
+
+  function founderTable(tok, usd) {
+    $("founder-sell").innerHTML = [1e6, 5e6, 10e6, 30e6].map((t) => {
+      const s = SenseiAMM.simulateSell(t, tok, usd);
+      return `<tr><td>${fmtNum(t, 0)} (${fmtNum((t / 30e6) * 100, 1)} %)</td><td>${fmtNum(s.valueAtSpot)} USD</td>
+        <td><b>${fmtNum(s.received)} USD</b></td><td>−${fmtNum(s.priceImpact * 100, 1)} %</td></tr>`;
+    }).join("");
   }
 
   document.getElementById("calc").addEventListener("input", calc);

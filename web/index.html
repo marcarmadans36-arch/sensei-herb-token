@@ -57,7 +57,7 @@
         <summary>Definiciones: total, circulante, capitalización y FDV</summary>
         <ul>
           <li><b>Suministro total:</b> 100.000.000 SENSEI, acuñados una sola vez. El contrato no tiene función de emisión.</li>
-          <li><b>Circulante:</b> tokens que cualquiera puede comprar o vender hoy. Excluye vesting, comunidad y tesorería no distribuidas. Al inicio, solo los tokens depositados en el pool.</li>
+          <li><b>Circulante:</b> tokens que su titular puede vender hoy. Incluye los 30.000.000 del fundador, libres desde el despliegue, y los del pool. Excluye la tesorería en vesting y las carteras de comunidad y liquidez aún no distribuidas. Al inicio: hasta 45.000.000.</li>
           <li><b>Capitalización:</b> precio × circulante.</li>
           <li><b>FDV:</b> precio × suministro total. Es una cifra teórica: nadie podría vender todo el suministro a ese precio.</li>
           <li>El valor de los tokens del fundador al precio mostrado <b>no es dinero realizable</b>: venderlos hundiría el precio (ver calculadora).</li>
@@ -82,7 +82,7 @@
       <h2>Fundador y tesorería</h2>
       <div class="grid2">
         <article class="card"><h3>Asignación del fundador (30 %)</h3>
-          <p>Bloqueada en un contrato de vesting de OpenZeppelin: <b>nada durante 12 meses</b>, después desbloqueo lineal hasta el mes 48. Nadie puede adelantar el calendario. Cuando se libere, el fundador podrá venderla; hacerlo afectaría al precio.</p></article>
+          <p><b>Sin vesting ni bloqueo.</b> Los 30.000.000 SENSEI se envían directamente a la cartera del fundador en la transacción de despliegue y son transferibles desde ese mismo bloque. El fundador puede venderlos en cualquier momento; una venta grande haría caer el precio y retiraría ETH del pool (ver la tabla de abajo).</p></article>
         <article class="card"><h3>Tesorería y desarrollo (25 %)</h3>
           <p>Desbloqueo lineal durante 24 meses hacia una cartera multifirma (Safe). Los movimientos de la tesorería son públicos y se documentarán.</p></article>
       </div>
@@ -100,6 +100,14 @@
       <div class="grid2">
         <article class="card"><h3>Venta</h3><dl id="c-sell-out"></dl></article>
         <article class="card"><h3>Compra</h3><dl id="c-buy-out"></dl></article>
+      </div>
+      <h3 class="sub">Si el fundador vende (con el pool de arriba)</h3>
+      <p class="muted">Los tokens del fundador están libres desde el despliegue. La tabla muestra lo que recibiría vendiendo de una vez, ya descontados el impacto de precio y la comisión del 0,30 % (sin gas). Es una simulación, no una operación.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Vende</th><th>Valor a precio mostrado</th><th>Recibiría</th><th>Precio tras la venta</th></tr></thead>
+          <tbody id="founder-sell"></tbody>
+        </table>
       </div>
     </section>
 

@@ -24,6 +24,7 @@ h1 { font-size: clamp(2rem, 5vw, 3rem); margin: .2em 0; line-height: 1.1; }
 section { padding: 40px 0 8px; }
 h2 { font-size: 1.6rem; margin: 0 0 16px; }
 h3 { margin: 0 0 8px; font-size: 1.05rem; }
+h3.sub { margin-top: 24px; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
 .card p { margin: 0; color: var(--muted); }
 .grid3, .grid2 { display: grid; gap: 14px; }

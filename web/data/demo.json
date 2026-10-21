@@ -4,29 +4,25 @@
   "network": "hardhat",
   "chainId": 31337,
   "explorer": null,
-  "deployedAt": "2026-10-21T14:42:17.300Z",
+  "deployedAt": "2026-10-21T15:53:34.988Z",
   "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
   "token": {
-    "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
     "name": "Sensei Herb",
     "symbol": "SENSEI",
     "decimals": 18,
     "maxSupply": "100000000000000000000000000"
   },
-  "vestingStart": 1792594336,
+  "vestingStart": 1792598613,
   "allocations": [
     {
       "key": "founder",
       "label": "Fundador",
       "bps": 3000,
       "amount": "30000000000000000000000000",
-      "holder": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "holder": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
       "beneficiary": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-      "vesting": {
-        "contract": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-        "cliffMonths": 12,
-        "durationMonths": 48
-      }
+      "vesting": null
     },
     {
       "key": "community",
@@ -42,10 +38,10 @@
       "label": "Tesorería y desarrollo",
       "bps": 2500,
       "amount": "25000000000000000000000000",
-      "holder": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "holder": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "beneficiary": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
       "vesting": {
-        "contract": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+        "contract": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
         "cliffMonths": 0,
         "durationMonths": 24
       }
@@ -61,15 +57,14 @@
     }
   ],
   "transactions": {
-    "founderVesting": "0x96af21bbb4d9a8ec1298745f358b2269cbff2b699d2f582b6e2c077cefaefefc",
-    "treasuryVesting": "0xcd430072b10e442869f556b135fb9cb460149e8d03ca98faca1b12bbb0ba6e28",
-    "token": "0xadc9a5af5c8ce8a27ab443bb04d5190ff7ef78d37827ebb690f2d26601446f07"
+    "treasuryVesting": "0x613f7d26b6bae2aedd81ac13c6c56368c7a3dcccdc2eaaa1ff6308e9cf575170",
+    "token": "0x17846473f77fbd2168501373a1689e4f16d822dac77ed91840cc3efbb28b481e"
   },
   "snapshot": {
     "balances": {
-      "0x5FbDB2315678afecb367f032d93F642f64180aa3": "30000000000000000000000000",
+      "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": "30000000000000000000000000",
       "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": "30000000000000000000000000",
-      "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512": "25000000000000000000000000",
+      "0x5FbDB2315678afecb367f032d93F642f64180aa3": "25000000000000000000000000",
       "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": "0"
     },
     "pool": {
@@ -79,12 +74,12 @@
   },
   "liquidity": {
     "dex": "Uniswap V2 (local)",
-    "router": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
-    "factory": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
-    "pair": "0xd490f155Fb9D18b64E985e7BAC7615Fe277370ad",
+    "router": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "factory": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+    "pair": "0xa17A7058165761492E206CF798c12B0E7cc482F7",
     "lpRecipient": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
-    "approveTx": "0x599f8eb26856fa4a75b8a86a547603899a59716029d4ad0706335823070d40b5",
-    "addLiquidityTx": "0x40f8564e7ff775ab1464c3035b5733327048b472700965716cbbae29f7b1e9dd",
-    "blockNumber": 8
+    "approveTx": "0x0c542eb5c707080e3a59965ccf6699b7fb35d20579c1148835d3387daed29e71",
+    "addLiquidityTx": "0x3059986a489ee53eb7d9f71812e3a44583bb39c80c230312ccddc7a405b1e778",
+    "blockNumber": 7
   }
 }

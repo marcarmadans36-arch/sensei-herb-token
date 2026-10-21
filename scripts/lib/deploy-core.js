@@ -1,7 +1,7 @@
 // Lógica de despliegue compartida por scripts/deploy.js y las pruebas.
 const { ethers } = require("hardhat");
 
-/** Despliega los contratos de vesting necesarios y el token. Devuelve direcciones y recibos. */
+/** Despliega un SenseiVesting por cada categoría con vesting (hoy solo tesorería) y el token. Devuelve direcciones y recibos. */
 async function deploySenseiHerb(cfg, signer, startTimestamp) {
   const Vesting = await ethers.getContractFactory("SenseiVesting", signer);
   const Token = await ethers.getContractFactory("SenseiHerbToken", signer);

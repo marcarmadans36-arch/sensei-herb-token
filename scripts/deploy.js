@@ -46,13 +46,20 @@ async function main() {
   console.log(`Saldo:          ${fmt(balance)} ETH`);
   console.log(`Token:          ${cfg.name} (${cfg.symbol}), 18 decimales`);
   console.log(`Suministro:     ${cfg.maxSupplyTokens.toLocaleString("es-ES")} (fijo, sin mint posterior)`);
-  console.log(`Inicio vesting: ${start} (${new Date(Number(start) * 1000).toISOString()})\n`);
+  console.log(`Inicio vesting (tesorería): ${start} (${new Date(Number(start) * 1000).toISOString()})\n`);
   for (const c of cfg.categories) {
     const sched = c.vesting
       ? `vesting ${c.vestingMonths} meses, cliff ${c.cliffMonths} → contrato SenseiVesting (beneficiario ${c.address})`
       : `directo a ${c.address}`;
     console.log(`  ${c.label.padEnd(24)} ${(Number(c.bps) / 100).toFixed(2).padStart(6)}%  ${fmt(c.amount).padStart(14)}  ${sched}`);
   }
+
+  // El fundador recibe tokens libres. Si su dirección es un contrato (Safe u otro), ese contrato
+  // decide cómo se mueven: se avisa para descartar un bloqueo indirecto no deseado.
+  const founder = cfg.categories.find((c) => c.key === "founder");
+  if ((await ethers.provider.getCode(founder.address)) !== "0x")
+    console.log(`\n⚠️  FOUNDER_ADDRESS ${founder.address} es un contrato. Comprueba que lo controlas y que no impone bloqueos.`);
+  else console.log(`\nFundador: ${founder.address} es una cartera normal (EOA). Sus tokens serán transferibles desde el primer bloque.`);
 
   // Estimación de gas de cada transacción de despliegue.
   const Vesting = await ethers.getContractFactory("SenseiVesting", deployer);
@@ -87,7 +94,8 @@ async function main() {
 
   console.log("\nPermisos tras el despliegue:");
   console.log("  - El token NO tiene owner, mint, pausa, lista negra ni impuestos. El desplegador no conserva privilegios.");
-  console.log("  - Cada SenseiVesting tiene como owner a su beneficiario: solo puede llamar release() según el calendario");
+  console.log("  - Los tokens del fundador llegan directamente a su cartera, sin contrato intermedio ni bloqueo.");
+  console.log("  - El SenseiVesting de tesorería tiene como owner a su beneficiario: solo puede llamar release() según el calendario");
   console.log("    o transferir la titularidad. Nadie puede adelantar el desbloqueo.");
 
   if (process.env.DRY_RUN === "true") { console.log("\nDRY_RUN=true: no se envía ninguna transacción."); return; }
