@@ -23,7 +23,7 @@ Marca cada casilla tú mismo. Nada de esta lista se ha ejecutado en una red púb
 - [ ] `npm run wallet:new` (cartera de despliegue desechable; la clave solo va a `.env`)
 - [ ] Obtener ETH de Base Sepolia en un faucet (ver docs.base.org → Network Faucets)
 - [ ] `npm run preflight:sepolia` → debe terminar en LISTO
-- [ ] `DRY_RUN=true npm run deploy:sepolia`
+- [ ] `npm run deploy:sepolia:dry`
 - [ ] `npm run deploy:sepolia` → escribir `DESPLEGAR 84532`. El plan debe mostrar "Fundador … directo" y "es una cartera normal (EOA)".
 - [ ] Comprobar en el explorador que `FOUNDER_ADDRESS` tiene 30.000.000 SENSEI desde el bloque de creación, y hacer una transferencia de prueba desde ella.
 - [ ] Clave de Etherscan en `.env` → `npm run verify:sepolia`
@@ -36,7 +36,7 @@ Marca cada casilla tú mismo. Nada de esta lista se ha ejecutado en una red púb
 - [ ] Fondear la cartera de despliegue: ≈ 0,002 ETH para gas + el ETH destinado al pool.
 - [ ] `npm audit` y `npm test` una última vez.
 - [ ] `npm run preflight:base` → debe terminar en LISTO (en mainnet, el fundador NO debe ser la cartera de despliegue).
-- [ ] `DRY_RUN=true npm run deploy:base` → revisar red (chainId 8453), direcciones y coste.
+- [ ] `npm run deploy:base:dry` → revisar red (chainId 8453), direcciones y coste.
 - [ ] `npm run deploy:base` → escribir `DESPLEGAR 8453`.
 - [ ] `npm run verify:base` y comprobar en basescan.org.
 - [ ] Commit de `deployments/base.json` y `web/data/base.json`.
@@ -44,7 +44,7 @@ Marca cada casilla tú mismo. Nada de esta lista se ha ejecutado en una red púb
 ## 4. Pool de liquidez (coste real, opcional)
 - [ ] Revisar las direcciones de Uniswap V2 de `config/dex.js` en la documentación oficial de Uniswap.
 - [ ] `LP_TOKEN_AMOUNT` y `LP_ETH_AMOUNT` en `.env`.
-- [ ] `DRY_RUN=true npm run liquidity:base` → revisar precio inicial e impacto.
+- [ ] `DRY_RUN=true npm run liquidity:base` (en PowerShell: `$env:DRY_RUN="true"; npm run liquidity:base; Remove-Item Env:DRY_RUN`) → revisar precio inicial e impacto.
 - [ ] `npm run liquidity:base` → escribir `CREAR POOL 8453`.
 - [ ] Comprobar el par en Basescan y en la interfaz de Uniswap. Aplicar la decisión sobre los tokens LP.
 - [ ] Commit del registro actualizado.

@@ -105,7 +105,7 @@ function report() {
   const fails = results.filter(([k]) => k === "FALLO").length;
   const warns = results.filter(([k]) => k === "AVISO").length;
   console.log(`\nResultado: ${fails ? "NO LISTO" : "LISTO"} — ${fails} fallos, ${warns} avisos. No se ha enviado ninguna transacción.`);
-  if (!fails) console.log(`Siguiente: DRY_RUN=true npm run deploy:${network.name === "base" ? "base" : "sepolia"}  y después sin DRY_RUN.`);
+  if (!fails) console.log(`Siguiente: npm run deploy:${network.name === "base" ? "base" : "sepolia"}:dry  y después npm run deploy:${network.name === "base" ? "base" : "sepolia"}`);
   if (fails) process.exitCode = 1;
 }
 

@@ -6,18 +6,23 @@ Estado: **preparado, no desplegado.** El entorno en la nube de Claude no puede c
 
 ## Opción A — Desde tu ordenador (recomendada)
 
-Requisitos: Node.js ≥ 20, git.
+Requisitos: Node.js ≥ 20 (`node -v`) y git.
 
-```bash
+**Windows PowerShell 5.1** no admite `&&` ni `VARIABLE=valor comando`: ejecuta **un comando por línea**, de uno en uno, y no pegues la guía entera de golpe (entre medias hay que pedir ETH al faucet y editar `.env`). Todos los comandos `npm run …` de esta guía funcionan igual en PowerShell, cmd y bash.
+
+Clónalo **fuera** de la carpeta de la app (no dentro de `sensei-herb`):
+
+```
+cd $HOME
 git clone -b claude/awesome-mccarthy-orqpwo https://github.com/marcarmadans36-arch/sensei-herb-token.git
 cd sensei-herb-token
 npm ci
-npm test                      # deben pasar todas las pruebas
+npm test
 ```
 
 ### 1. Cartera de despliegue desechable
 
-```bash
+```
 npm run wallet:new
 ```
 
@@ -28,6 +33,8 @@ Crea `.env` (si no existe) con una clave nueva **que no se muestra en pantalla**
 Envía ETH de Base Sepolia a la dirección que ha mostrado el paso 1 usando un faucet. Busca los oficiales en la documentación de Base (docs.base.org → "Network Faucets"), por ejemplo el de Coinbase Developer Platform o el de Alchemy. Con **0,01 ETH de prueba** sobra: el despliegue gasta del orden de 0,0001 ETH o menos.
 
 ### 3. Rellenar `.env`
+
+Ábrelo con `notepad .env` (Windows) o tu editor.
 
 | Variable | En testnet |
 |---|---|
@@ -41,7 +48,7 @@ Usa direcciones distintas para cada categoría: así la web puede mostrar cada s
 
 ### 4. Chequeo previo (solo lectura)
 
-```bash
+```
 npm run preflight:sepolia
 ```
 
@@ -59,15 +66,15 @@ Termina en **LISTO** o **NO LISTO** y no envía nada.
 
 ### 5. Plan sin enviar
 
-```bash
-DRY_RUN=true npm run deploy:sepolia
+```
+npm run deploy:sepolia:dry
 ```
 
 Revisa la red (`baseSepolia (chainId 84532)`), cada dirección, que el fundador aparece como `directo` y el coste.
 
 ### 6. Desplegar
 
-```bash
+```
 npm run deploy:sepolia
 ```
 
@@ -80,7 +87,7 @@ Si `deployments/baseSepolia.json` ya existe, el script se niega a desplegar otra
 
 ### 7. Verificar el código fuente
 
-```bash
+```
 npm run verify:sepolia
 ```
 
@@ -96,7 +103,8 @@ Publica el código en Basescan (con `ETHERSCAN_API_KEY`) y en Sourcify. Después
 
 ### 9. Publicar el resultado
 
-```bash
+```
+git status
 git add deployments/baseSepolia.json web/data/baseSepolia.json
 git commit -m "deploy: SENSEI en Base Sepolia"
 git push

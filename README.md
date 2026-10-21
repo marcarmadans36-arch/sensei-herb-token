@@ -60,7 +60,8 @@ El compilador `solc` 0.8.28 se instala desde npm (no se descarga en tiempo de co
 | `npm run scenarios` | Tabla de escenarios de liquidez | No |
 | `npm run founder-sell` | Simula la venta de los tokens del fundador (reservas hipotéticas) | No |
 | `ETH_USD=… npm run founder-sell:base` | La misma simulación con las reservas reales del pool (solo lectura) | No |
-| `npm run web` | Sirve la web en http://localhost:8080 | No |
+| `npm run web` | Sirve la web en http://localhost:8080 (Node, sin Python) | No |
+| `npm run deploy:sepolia:dry` / `deploy:base:dry` | Plan y coste del despliegue sin enviar nada (funciona en PowerShell, cmd y bash) | No |
 | `npm run check:secrets` | Busca claves en archivos versionados | No |
 | `npm run wallet:new` | Crea una cartera de despliegue desechable y guarda la clave solo en `.env` | No |
 | `npm run preflight:sepolia` / `preflight:base` | Chequeo previo de solo lectura: RPC, saldo, direcciones, coste | No |
@@ -76,7 +77,7 @@ Con `DRY_RUN=true` delante, los scripts de despliegue y de liquidez muestran el 
 Guía completa de la red de pruebas: [docs/DEPLOY_BASE_SEPOLIA.md](docs/DEPLOY_BASE_SEPOLIA.md).
 
 1. `npm run wallet:new` y rellena las direcciones en `.env` (ver [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md)). La clave de despliegue solo va en `.env`, nunca en el chat ni en git.
-2. `npm run preflight:sepolia` y `DRY_RUN=true npm run deploy:sepolia` → revisa el plan.
+2. `npm run preflight:sepolia` y `npm run deploy:sepolia:dry` → revisa el plan.
 3. `npm run deploy:sepolia` → confirma escribiendo `DESPLEGAR 84532`.
 4. `npm run verify:sepolia`.
 5. Repite con `base` cuando la red de pruebas esté validada.
