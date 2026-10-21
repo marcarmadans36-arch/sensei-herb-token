@@ -10,6 +10,7 @@ Token ERC-20 de suministro fijo en **Base** para financiar el desarrollo de Sens
 | [SECURITY.md](SECURITY.md) | Modelo de permisos, gestión de claves y validación |
 | [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md) | Pasos pendientes para testnet, mainnet y pool |
 | [docs/LIQUIDITY.md](docs/LIQUIDITY.md) | DEX, escenarios de precio, slippage y ventas |
+| [docs/DEPLOY_BASE_SEPOLIA.md](docs/DEPLOY_BASE_SEPOLIA.md) | Guía paso a paso del despliegue en la red de pruebas |
 | [docs/FOUNDER_SELL_SIMULATION.md](docs/FOUNDER_SELL_SIMULATION.md) | Cuánto recibiría el fundador al vender sus tokens libres |
 
 ## Elección de la blockchain: Base
@@ -61,6 +62,8 @@ El compilador `solc` 0.8.28 se instala desde npm (no se descarga en tiempo de co
 | `ETH_USD=… npm run founder-sell:base` | La misma simulación con las reservas reales del pool (solo lectura) | No |
 | `npm run web` | Sirve la web en http://localhost:8080 | No |
 | `npm run check:secrets` | Busca claves en archivos versionados | No |
+| `npm run wallet:new` | Crea una cartera de despliegue desechable y guarda la clave solo en `.env` | No |
+| `npm run preflight:sepolia` / `preflight:base` | Chequeo previo de solo lectura: RPC, saldo, direcciones, coste | No |
 | `npm run deploy:sepolia` / `verify:sepolia` | Red de pruebas Base Sepolia | No (ETH de faucet) |
 | `npm run deploy:base` | **Red principal**. Pide escribir `DESPLEGAR 8453` | **Sí** |
 | `npm run verify:base` | Verificación en Basescan | No |
@@ -70,8 +73,10 @@ Con `DRY_RUN=true` delante, los scripts de despliegue y de liquidez muestran el 
 
 ## Despliegue
 
-1. `cp .env.example .env` y rellena las direcciones (ver [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md)). La clave de despliegue solo va en `.env`, nunca en el chat ni en git.
-2. `DRY_RUN=true npm run deploy:sepolia` → revisa el plan.
+Guía completa de la red de pruebas: [docs/DEPLOY_BASE_SEPOLIA.md](docs/DEPLOY_BASE_SEPOLIA.md).
+
+1. `npm run wallet:new` y rellena las direcciones en `.env` (ver [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md)). La clave de despliegue solo va en `.env`, nunca en el chat ni en git.
+2. `npm run preflight:sepolia` y `DRY_RUN=true npm run deploy:sepolia` → revisa el plan.
 3. `npm run deploy:sepolia` → confirma escribiendo `DESPLEGAR 84532`.
 4. `npm run verify:sepolia`.
 5. Repite con `base` cuando la red de pruebas esté validada.
@@ -118,4 +123,5 @@ docs/               LIQUIDITY.md
 - **Fase C, validación:** compilación correcta, 29/29 pruebas, distribución comprobada en cadena (local), sin secretos versionados, revisión de permisos.
 - **Fase D, despliegue de prueba:** despliegue completo y pool Uniswap V2 en la red local de Hardhat. **Base Sepolia no**: este entorno no puede conectarse a su RPC y no hay cartera con fondos de faucet.
 - **Fase E:** comandos de mainnet preparados con confirmación obligatoria. No se ha ejecutado ninguna transacción real.
+- **Preparación de Base Sepolia (21-10-2026):** cartera desechable (`wallet:new`), chequeo previo de solo lectura (`preflight`) y bloqueo de redespliegue accidental. Ensayo completo contra un nodo local tratado como red pública, incluida la lectura en vivo de la web. Sin conexión a Base Sepolia desde este entorno.
 - **Cambio de tokenomics (21-10-2026):** se elimina el vesting del fundador. Sus 30 M van directamente a `FOUNDER_ADDRESS` y están disponibles desde el bloque de despliegue. Se elimina el contrato de vesting del fundador (queda solo el de tesorería). Se añade la simulación de venta del fundador. 31/31 pruebas. Sin despliegues ni transacciones reales.

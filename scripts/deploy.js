@@ -10,10 +10,9 @@ const hre = require("hardhat");
 const { ethers, network } = hre;
 const { loadTokenomics } = require("../config/tokenomics");
 const { deploySenseiHerb, verifyDistribution } = require("./lib/deploy-core");
+const { estimateDeployment } = require("./lib/estimate");
 
 const LOCAL = ["hardhat", "localhost"];
-// Predeploy GasPriceOracle de OP Stack (Base): calcula la comisión de datos en L1.
-const GAS_PRICE_ORACLE = "0x420000000000000000000000000000000000000F";
 const EXPLORERS = { 8453: "https://basescan.org", 84532: "https://sepolia.basescan.org" };
 
 const fmt = (wei) => ethers.formatUnits(wei, 18);
@@ -25,6 +24,10 @@ async function ask(question) {
 
 async function main() {
   const isLocal = LOCAL.includes(network.name);
+  const recordFile = path.join(__dirname, "..", "deployments", `${network.name}.json`);
+  if (!isLocal && fs.existsSync(recordFile) && process.env.FORCE_REDEPLOY !== "true")
+    throw new Error(`Ya existe ${path.relative(process.cwd(), recordFile)}: este token ya está desplegado en ${network.name}. ` +
+      "Un segundo despliegue crearía OTRO token distinto. Si es intencionado, mueve ese archivo o usa FORCE_REDEPLOY=true.");
   const signers = await ethers.getSigners();
   if (signers.length === 0) throw new Error("No hay cuenta de despliegue. Define DEPLOYER_PRIVATE_KEY en .env (nunca en el chat ni en git).");
   const deployer = signers[0];
@@ -62,35 +65,14 @@ async function main() {
   else console.log(`\nFundador: ${founder.address} es una cartera normal (EOA). Sus tokens serán transferibles desde el primer bloque.`);
 
   // Estimación de gas de cada transacción de despliegue.
-  const Vesting = await ethers.getContractFactory("SenseiVesting", deployer);
-  const Token = await ethers.getContractFactory("SenseiHerbToken", deployer);
-  const txReqs = [];
-  for (const c of cfg.categories.filter((c) => c.vesting)) {
-    txReqs.push({ label: `SenseiVesting (${c.key})`, req: await Vesting.getDeployTransaction(c.address, start, c.durationSeconds, c.cliffSeconds) });
-  }
-  const placeholder = cfg.categories.map((c) => c.address);
-  txReqs.push({ label: "SenseiHerbToken", req: await Token.getDeployTransaction(cfg.name, cfg.symbol, cfg.maxSupply, cfg.categories.map((c) => c.label), placeholder, cfg.categories.map((c) => c.amount)) });
-
-  const fee = await ethers.provider.getFeeData();
-  const gasPrice = fee.maxFeePerGas ?? fee.gasPrice;
-  let totalGas = 0n;
-  let l1Fee = 0n;
-  const oracle = new ethers.Contract(GAS_PRICE_ORACLE, ["function getL1Fee(bytes) view returns (uint256)"], ethers.provider);
+  const est = await estimateDeployment(cfg, deployer, start, chainId);
   console.log("\nTransacciones (crean contratos; no conceden aprobaciones ni permisos a nadie):");
-  for (const t of txReqs) {
-    const gas = await ethers.provider.estimateGas({ ...t.req, from: deployer.address });
-    totalGas += gas;
-    if (chainId === 8453 || chainId === 84532) {
-      try { l1Fee += await oracle.getL1Fee(t.req.data); } catch { /* el oráculo no responde: se omite */ }
-    }
-    console.log(`  - ${t.label.padEnd(28)} gas ≈ ${gas.toString().padStart(9)}  datos ${((t.req.data.length - 2) / 2)} bytes`);
-  }
-  const l2Cost = totalGas * gasPrice;
-  console.log(`\nPrecio de gas (máx.): ${ethers.formatUnits(gasPrice, "gwei")} gwei`);
-  console.log(`Coste L2 estimado:    ${ethers.formatEther(l2Cost)} ETH`);
-  if (l1Fee > 0n) console.log(`Comisión datos L1:    ${ethers.formatEther(l1Fee)} ETH`);
-  console.log(`TOTAL estimado:       ${ethers.formatEther(l2Cost + l1Fee)} ETH (máximo; el coste real suele ser menor)`);
-  if (balance < l2Cost + l1Fee) console.log("⚠️  El saldo del desplegador es insuficiente para el máximo estimado.");
+  for (const t of est.txs) console.log(`  - ${t.label.padEnd(28)} gas ≈ ${t.gas.toString().padStart(9)}  datos ${t.bytes} bytes`);
+  console.log(`\nPrecio de gas (máx.): ${ethers.formatUnits(est.gasPrice, "gwei")} gwei`);
+  console.log(`Coste L2 estimado:    ${ethers.formatEther(est.l2Cost)} ETH`);
+  if (est.l1Fee > 0n) console.log(`Comisión datos L1:    ${ethers.formatEther(est.l1Fee)} ETH`);
+  console.log(`TOTAL estimado:       ${ethers.formatEther(est.total)} ETH (máximo; el coste real suele ser menor)`);
+  if (balance < est.total) console.log("⚠️  El saldo del desplegador es insuficiente para el máximo estimado.");
 
   console.log("\nPermisos tras el despliegue:");
   console.log("  - El token NO tiene owner, mint, pausa, lista negra ni impuestos. El desplegador no conserva privilegios.");
@@ -135,8 +117,7 @@ async function main() {
     transactions: txs,
     liquidity: null,
   };
-  const file = path.join(__dirname, "..", "deployments", `${network.name}.json`);
-  fs.writeFileSync(file, JSON.stringify(record, null, 2) + "\n");
+  fs.writeFileSync(recordFile, JSON.stringify(record, null, 2) + "\n");
   console.log(`Registro guardado en deployments/${network.name}.json`);
   if (!isLocal) {
     fs.writeFileSync(path.join(__dirname, "..", "web", "data", `${network.name}.json`), JSON.stringify(record, null, 2) + "\n");

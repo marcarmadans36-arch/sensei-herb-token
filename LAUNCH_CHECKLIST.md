@@ -18,9 +18,11 @@ Marca cada casilla tú mismo. Nada de esta lista se ha ejecutado en una red púb
 - [ ] Cartera desechable de despliegue + liquidez → `DEPLOYER_PRIVATE_KEY` en `.env` y su dirección en `LIQUIDITY_ADDRESS`.
 - [ ] Copiar `.env.example` a `.env` y rellenar. Comprobar `git status`: `.env` no debe aparecer.
 
-## 2. Red de pruebas (gratis)
-- [ ] Obtener ETH de Base Sepolia en un faucet (p. ej. el de Coinbase Developer Platform o Alchemy).
+## 2. Red de pruebas (gratis) — guía detallada en `docs/DEPLOY_BASE_SEPOLIA.md`
 - [ ] `npm test`
+- [ ] `npm run wallet:new` (cartera de despliegue desechable; la clave solo va a `.env`)
+- [ ] Obtener ETH de Base Sepolia en un faucet (ver docs.base.org → Network Faucets)
+- [ ] `npm run preflight:sepolia` → debe terminar en LISTO
 - [ ] `DRY_RUN=true npm run deploy:sepolia`
 - [ ] `npm run deploy:sepolia` → escribir `DESPLEGAR 84532`. El plan debe mostrar "Fundador … directo" y "es una cartera normal (EOA)".
 - [ ] Comprobar en el explorador que `FOUNDER_ADDRESS` tiene 30.000.000 SENSEI desde el bloque de creación, y hacer una transferencia de prueba desde ella.
@@ -33,6 +35,7 @@ Marca cada casilla tú mismo. Nada de esta lista se ha ejecutado en una red púb
 - [ ] Comprar ETH y retirarlo **directamente a la red Base** (muchos exchanges lo permiten; evita el puente desde Ethereum L1, que es más caro).
 - [ ] Fondear la cartera de despliegue: ≈ 0,002 ETH para gas + el ETH destinado al pool.
 - [ ] `npm audit` y `npm test` una última vez.
+- [ ] `npm run preflight:base` → debe terminar en LISTO (en mainnet, el fundador NO debe ser la cartera de despliegue).
 - [ ] `DRY_RUN=true npm run deploy:base` → revisar red (chainId 8453), direcciones y coste.
 - [ ] `npm run deploy:base` → escribir `DESPLEGAR 8453`.
 - [ ] `npm run verify:base` y comprobar en basescan.org.

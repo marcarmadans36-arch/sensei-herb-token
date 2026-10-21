@@ -5,7 +5,7 @@ const fs = require("fs");
 // Claves públicas conocidas de las cuentas de prueba de Hardhat que no son secretos: no hay ninguna en el repo.
 const PATTERNS = [
   { name: "clave privada hex (64)", re: /(?<![0-9a-fA-F])(0x)?[0-9a-fA-F]{64}(?![0-9a-fA-F])/ },
-  { name: "asignación de clave", re: /PRIVATE_KEY\s*=\s*\S+/ },
+  { name: "asignación de clave", re: /PRIVATE_KEY\s*[=:]\s*["']?(0x)?[0-9a-fA-F]{20,}/ },
   { name: "posible frase semilla", re: /\b(mnemonic|seed phrase)\b\s*[:=]\s*["']?\w+(\s+\w+){11,}/i },
 ];
 const files = execSync("git ls-files --cached --others --exclude-standard", { encoding: "utf8" }).split("\n").filter(Boolean)

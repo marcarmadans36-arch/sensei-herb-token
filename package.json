@@ -5,6 +5,9 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
+    "wallet:new": "node scripts/wallet-new.js",
+    "preflight:sepolia": "hardhat run scripts/preflight.js --network baseSepolia",
+    "preflight:base": "hardhat run scripts/preflight.js --network base",
     "deploy:local": "hardhat run scripts/deploy.js --network hardhat",
     "demo:local": "hardhat run scripts/demo-local.js --network hardhat",
     "deploy:sepolia": "hardhat run scripts/deploy.js --network baseSepolia",
