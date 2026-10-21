@@ -1,0 +1,64 @@
+{
+  "demo": false,
+  "network": "baseSepolia",
+  "chainId": 84532,
+  "explorer": "https://sepolia.basescan.org",
+  "deployedAt": "2026-10-21T22:21:55.184Z",
+  "blockNumber": 48497222,
+  "deployer": "0xD88610b4fD372AFfEe9496CD6b42430e223ba57B",
+  "token": {
+    "address": "0x4F22001f1154805f71Fb1c9F12313578968F3818",
+    "name": "Sensei Herb",
+    "symbol": "SENSEI",
+    "decimals": 18,
+    "maxSupply": "100000000000000000000000000"
+  },
+  "vestingStart": 1792621909,
+  "allocations": [
+    {
+      "key": "founder",
+      "label": "Fundador",
+      "bps": 3000,
+      "amount": "30000000000000000000000000",
+      "holder": "0xFd986C1D822a113b48EAE2924f84d61061132cA7",
+      "beneficiary": "0xFd986C1D822a113b48EAE2924f84d61061132cA7",
+      "vesting": null
+    },
+    {
+      "key": "community",
+      "label": "Comunidad",
+      "bps": 3000,
+      "amount": "30000000000000000000000000",
+      "holder": "0xbfdc377E8ad915058B0a2ff8A2087F3A45d2e4af",
+      "beneficiary": "0xbfdc377E8ad915058B0a2ff8A2087F3A45d2e4af",
+      "vesting": null
+    },
+    {
+      "key": "treasury",
+      "label": "Tesorería y desarrollo",
+      "bps": 2500,
+      "amount": "25000000000000000000000000",
+      "holder": "0xBe22724CEF9e71c09F2eEF223DEbdd276CDbBfcF",
+      "beneficiary": "0x04038Db838e69EFc1C2001FDBfe1A76654Dc478E",
+      "vesting": {
+        "contract": "0xBe22724CEF9e71c09F2eEF223DEbdd276CDbBfcF",
+        "cliffMonths": 0,
+        "durationMonths": 24
+      }
+    },
+    {
+      "key": "liquidity",
+      "label": "Liquidez y distribución",
+      "bps": 1500,
+      "amount": "15000000000000000000000000",
+      "holder": "0xD88610b4fD372AFfEe9496CD6b42430e223ba57B",
+      "beneficiary": "0xD88610b4fD372AFfEe9496CD6b42430e223ba57B",
+      "vesting": null
+    }
+  ],
+  "transactions": {
+    "treasuryVesting": "0xb3e069dcd0034b6ed87c755952ebf38e8de317af8a7a9eda1a929d2184ea297a",
+    "token": "0xf00c436d74c8f6f018fd48f48370a02c032650e1c6273a7f8a4060f572600ba3"
+  },
+  "liquidity": null
+}
